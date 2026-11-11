@@ -67,7 +67,8 @@
     </div>
     <div class="row">
       <button id="pdf">Descargar PDF (+ solución)</button>
-      <button id="svg">Descargar SVG + solución (Illustrator)</button>
+      <button id="svg">SVG laberinto (Illustrator)</button>
+      <button id="svgsol">SVG solución (Illustrator)</button>
     </div>
   </div>
   <div class="preview"><svg id="page" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297"></svg></div>
@@ -266,11 +267,9 @@ $('new').onclick=()=>{S.seed=Math.floor(Math.random()*1e6);update()};
 const svgText=sol=>`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 297" width="210mm" height="297mm">${draw(lastMaze,sol)}</svg>`;
 function download(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 const fname=(ext,suf='')=>`laberinto-${S.shape}-nivel${S.level+1}-${S.seed}${suf}.${ext}`;
-// cada descarga lleva su hoja de respuesta
-$('svg').onclick=()=>{
-  download(new Blob([svgText(false)],{type:'image/svg+xml'}),fname('svg'));
-  setTimeout(()=>download(new Blob([svgText(true)],{type:'image/svg+xml'}),fname('svg','-solucion')),400);
-};
+// un botón por archivo: el navegador bloquea una segunda descarga automática
+$('svg').onclick=()=>download(new Blob([svgText(false)],{type:'image/svg+xml'}),fname('svg'));
+$('svgsol').onclick=()=>download(new Blob([svgText(true)],{type:'image/svg+xml'}),fname('svg','-solucion'));
 $('pdf').onclick=async()=>{
   if(!window.jspdf){window.print();return} // sin internet: usar "Guardar como PDF" del navegador
   const doc=new jspdf.jsPDF({unit:'mm',format:'a4'});
